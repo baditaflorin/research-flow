@@ -4,8 +4,11 @@ set -euo pipefail
 npm run build
 node scripts/check-pages-output.mjs
 
-PORT="${PORT:-4173}"
-PLAYWRIGHT_BASE_URL="http://127.0.0.1:${PORT}" node scripts/serve-docs.mjs &
+if [[ -z "${PORT:-}" ]]; then
+  PORT="$(node -e "const net=require('node:net'); const s=net.createServer(); s.listen(0,'127.0.0.1',()=>{console.log(s.address().port); s.close();});")"
+fi
+
+PORT="${PORT}" PLAYWRIGHT_BASE_URL="http://127.0.0.1:${PORT}" node scripts/serve-docs.mjs &
 SERVER_PID=$!
 
 cleanup() {
