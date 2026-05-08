@@ -1,13 +1,21 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { execSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
 
 const packageJson = JSON.parse(readFileSync(resolve("package.json"), "utf8")) as {
   version: string;
 };
+
+const releaseConfigPath = resolve("release.config.json");
+const releaseConfig = existsSync(releaseConfigPath)
+  ? (JSON.parse(readFileSync(releaseConfigPath, "utf8")) as {
+      commit?: string;
+      fullCommit?: string;
+    })
+  : {};
 
 function gitValue(command: string, fallback: string) {
   try {
@@ -19,8 +27,14 @@ function gitValue(command: string, fallback: string) {
   }
 }
 
-const commit = gitValue("git rev-parse --short HEAD", "local");
-const fullCommit = gitValue("git rev-parse HEAD", "local");
+const fullCommit =
+  process.env.VITE_APP_FULL_COMMIT ??
+  releaseConfig.fullCommit ??
+  gitValue("git rev-parse HEAD", "local");
+const commit =
+  process.env.VITE_APP_COMMIT ??
+  releaseConfig.commit ??
+  (fullCommit === "local" ? "local" : fullCommit.slice(0, 7));
 
 export default defineConfig({
   base: "/research-flow/",
