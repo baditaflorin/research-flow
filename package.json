@@ -1,0 +1,57 @@
+{
+  "name": "research-flow",
+  "version": "0.1.0",
+  "description": "Private browser research workspace for clustering papers, finding gaps, drafting outlines, and exporting cited Word/LaTeX.",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "homepage": "https://baditaflorin.github.io/research-flow/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/baditaflorin/research-flow.git"
+  },
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "node scripts/clean-pages-assets.mjs && vite build && node scripts/copy-404.mjs",
+    "preview:pages": "node scripts/serve-docs.mjs",
+    "lint": "eslint . && prettier --check . && tsc --noEmit",
+    "fmt": "prettier --write .",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "smoke": "bash scripts/smoke.sh"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^4.2.0",
+    "@tanstack/react-query": "^5.100.9",
+    "docx": "^9.6.1",
+    "idb": "^8.0.3",
+    "lucide-react": "^1.14.0",
+    "minisearch": "^7.2.0",
+    "pdfjs-dist": "^5.7.284",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.59.1",
+    "@tailwindcss/vite": "^4.2.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^4.1.5",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "jsdom": "^29.1.1",
+    "prettier": "^3.8.3",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.2",
+    "vite": "^8.0.11",
+    "vitest": "^4.1.5"
+  }
+}

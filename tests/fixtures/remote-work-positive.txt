@@ -1,0 +1,5 @@
+Remote Work Improves Productivity
+
+Abstract. This study examines remote work and productivity for software teams.
+
+The study finds that remote work increases productivity and improves focus for software teams. Future work should examine long-term outcomes and replication in other organizations.

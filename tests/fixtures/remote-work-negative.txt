@@ -1,0 +1,5 @@
+Remote Work Reduces Productivity
+
+Abstract. This study examines remote work and productivity for software teams.
+
+The study finds that remote work decreases productivity and reduces team coordination in software teams. The effect is not significant for senior staff.

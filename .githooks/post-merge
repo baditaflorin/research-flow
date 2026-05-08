@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Post-merge: run npm install if package-lock.json changed, then make build for Pages artifacts."
