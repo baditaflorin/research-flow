@@ -19,19 +19,46 @@ export async function analyzePapers(
   const contradictions = detectContradictions(readyPapers, clusters);
   const gaps = detectGaps(readyPapers, clusters);
   const outline = generateOutline(readyPapers, clusters, contradictions, gaps);
+  const sourceHash = analysisSourceHash(readyPapers, options);
 
   return {
     schemaVersion: 1,
-    generatedAt: new Date().toISOString(),
-    durationMs: performance.now() - started,
+    generatedAt: "1970-01-01T00:00:00.000Z",
+    durationMs: Math.round(performance.now() - started),
     engine: options.useDeepEmbeddings ? "transformers-js" : "local-tfidf",
     papersAnalyzed: readyPapers.length,
+    provenance: {
+      appVersion: appVersion(),
+      schemaVersion: 1,
+      sourceHash,
+      parameters: options,
+      paperIds: readyPapers.map((paper) => paper.id).sort()
+    },
+    warnings: readyPapers.flatMap((paper) => paper.warnings ?? []),
     clusters,
     contradictions,
     gaps,
     outline,
     citations: createCitationRecords(readyPapers)
   };
+}
+
+function analysisSourceHash(papers: ResearchPaper[], options: AnalyzeOptions) {
+  const input = JSON.stringify({
+    paperHashes: papers.map((paper) => paper.contentHash ?? paper.id).sort(),
+    options
+  });
+  let hash = 2166136261;
+  for (let index = 0; index < input.length; index += 1) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
+function appVersion() {
+  const globalVersion = (globalThis as { __APP_VERSION__?: string }).__APP_VERSION__;
+  return globalVersion ?? "0.1.0";
 }
 
 async function vectorizeWithTransformers(papers: ResearchPaper[]): Promise<VectorizedPaper[]> {

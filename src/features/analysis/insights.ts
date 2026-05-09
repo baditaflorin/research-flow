@@ -94,7 +94,8 @@ export function detectGaps(papers: ResearchPaper[], clusters: Cluster[]): Gap[] 
         opportunity:
           "Add adjacent papers or position this as a narrow, emerging thread in the review.",
         relatedPaperIds: cluster.paperIds,
-        priority: "high"
+        priority: "high",
+        confidence: cluster.confidence
       });
     }
   }
@@ -126,7 +127,8 @@ export function detectGaps(papers: ResearchPaper[], clusters: Cluster[]): Gap[] 
         rationale: `The uploaded set rarely mentions ${check.title.toLowerCase()}, which may weaken synthesis confidence.`,
         opportunity: check.opportunity,
         relatedPaperIds: papers.slice(0, 5).map((paper) => paper.id),
-        priority: gaps.length < 2 ? "medium" : "low"
+        priority: gaps.length < 2 ? "medium" : "low",
+        confidence: 0.58
       });
     }
   }
@@ -141,7 +143,8 @@ export function detectGaps(papers: ResearchPaper[], clusters: Cluster[]): Gap[] 
       rationale: `${futureWorkPapers.length} paper(s) contain limitation or future-work language worth mining directly.`,
       opportunity: "Turn repeated limitations into a dedicated gap subsection with citations.",
       relatedPaperIds: futureWorkPapers.slice(0, 8).map((paper) => paper.id),
-      priority: "high"
+      priority: "high",
+      confidence: 0.74
     });
   }
 

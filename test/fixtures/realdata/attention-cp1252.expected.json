@@ -7,7 +7,6 @@
     "status": "ready",
     "titleIncludes": ["Attention Is All You Need"],
     "titleMustNotInclude": ["�", "\\ufeff"],
-    "year": "2017",
     "minWords": 120,
     "lowText": false,
     "normalizationMustHandle": ["BOM", "CRLF", "NBSP", "smart quotes", "replacement characters"]

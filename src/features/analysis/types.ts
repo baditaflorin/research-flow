@@ -6,6 +6,8 @@ export interface Cluster {
   summary: string;
   keywords: string[];
   paperIds: string[];
+  confidence: number;
+  reasons: string[];
   x: number;
   y: number;
   color: string;
@@ -32,6 +34,7 @@ export interface Gap {
   opportunity: string;
   relatedPaperIds: string[];
   priority: "high" | "medium" | "low";
+  confidence: number;
 }
 
 export interface OutlineSection {
@@ -46,6 +49,16 @@ export interface CitationRecord {
   inline: string;
   bibliography: string;
   bibtex: string;
+  confidence: number;
+  warnings: string[];
+}
+
+export interface AnalysisProvenance {
+  appVersion: string;
+  schemaVersion: 1;
+  sourceHash: string;
+  parameters: AnalyzeOptions;
+  paperIds: string[];
 }
 
 export interface AnalysisResult {
@@ -54,6 +67,8 @@ export interface AnalysisResult {
   durationMs: number;
   engine: "local-tfidf" | "transformers-js";
   papersAnalyzed: number;
+  provenance: AnalysisProvenance;
+  warnings: string[];
   clusters: Cluster[];
   contradictions: Contradiction[];
   gaps: Gap[];

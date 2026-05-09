@@ -14,7 +14,9 @@ export function createCitationRecords(
       key,
       inline: inlineCitation(paper, style),
       bibliography: bibliographyEntry(paper, style),
-      bibtex: bibtexEntry(paper, key)
+      bibtex: bibtexEntry(paper, key),
+      confidence: citationConfidence(paper),
+      warnings: citationWarnings(paper)
     };
   });
 }
@@ -83,4 +85,27 @@ function shortTitle(title: string) {
 
 function escapeBibtex(value: string) {
   return value.replace(/[{}]/g, "");
+}
+
+function citationConfidence(paper: ResearchPaper) {
+  const fields = [
+    paper.inference?.title,
+    paper.inference?.authors,
+    paper.inference?.year,
+    paper.inference?.doi
+  ]
+    .filter(Boolean)
+    .map((field) => field?.confidence ?? 0);
+  if (!fields.length) return 0.3;
+  return Number((fields.reduce((sum, value) => sum + value, 0) / fields.length).toFixed(2));
+}
+
+function citationWarnings(paper: ResearchPaper) {
+  return [
+    ...(paper.warnings ?? []),
+    ...(paper.inference?.title.warnings ?? []),
+    ...(paper.inference?.authors.warnings ?? []),
+    ...(paper.inference?.year?.warnings ?? []),
+    ...(paper.inference?.doi?.warnings ?? [])
+  ];
 }

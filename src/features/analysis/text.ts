@@ -45,6 +45,27 @@ export function topTerms(text: string, limit = 12) {
     .map(([term]) => term);
 }
 
+export function topPhrases(text: string, limit = 12) {
+  const rawTokens = Array.from(text.toLowerCase().matchAll(/[a-z][a-z-]{2,}/g)).map((match) =>
+    match[0].replace(/-/g, "")
+  );
+  const counts = new Map<string, number>();
+
+  for (let index = 0; index < rawTokens.length - 1; index += 1) {
+    const left = rawTokens[index];
+    const right = rawTokens[index + 1];
+    if (stopwords.has(left) || stopwords.has(right)) continue;
+    if (left.length < 4 || right.length < 4) continue;
+    const phrase = `${left} ${right}`;
+    counts.set(phrase, (counts.get(phrase) ?? 0) + 1);
+  }
+
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, limit)
+    .map(([phrase]) => phrase);
+}
+
 export function sentences(text: string) {
   return text
     .replace(/\s+/g, " ")

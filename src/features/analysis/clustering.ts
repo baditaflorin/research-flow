@@ -1,5 +1,6 @@
 import { titleCase } from "../../shared/format";
 import type { ResearchPaper } from "../library/types";
+import { topPhrases, topTerms } from "./text";
 import type { Cluster } from "./types";
 import { cosineSimilarity, normalize, type VectorizedPaper } from "./vectorize";
 
@@ -25,7 +26,7 @@ export function clusterPapers(vectorized: VectorizedPaper[]): Cluster[] {
     .map(([clusterIndex, items], visualIndex) => {
       const keywords = clusterKeywords(items);
       const angle = (Math.PI * 2 * visualIndex) / Math.max(1, grouped.size);
-      const label = keywords.length ? titleCase(keywords.slice(0, 2).join(" ")) : "General";
+      const label = keywords.length ? titleCase(keywords[0]) : "General";
 
       return {
         id: `cluster-${clusterIndex}`,
@@ -36,11 +37,23 @@ export function clusterPapers(vectorized: VectorizedPaper[]): Cluster[] {
         ),
         keywords,
         paperIds: items.map((item) => item.paper.id),
+        confidence: clusterConfidence(keywords, items.length),
+        reasons: [
+          keywords[0]
+            ? `Label chosen from repeated research phrase "${keywords[0]}".`
+            : "No strong shared research phrase was detected."
+        ],
         x: Math.round(50 + 24 * Math.cos(angle)),
         y: Math.round(50 + 26 * Math.sin(angle)),
         color: colors[visualIndex % colors.length]
       };
     });
+}
+
+function clusterConfidence(keywords: string[], paperCount: number) {
+  const phraseBonus = keywords.some((keyword) => keyword.includes(" ")) ? 0.18 : 0;
+  const sizeBonus = Math.min(0.16, paperCount * 0.04);
+  return Number(Math.min(0.92, 0.48 + phraseBonus + sizeBonus).toFixed(2));
 }
 
 function chooseClusterCount(total: number) {
@@ -95,10 +108,26 @@ function clusterKeywords(items: VectorizedPaper[]) {
       totals.set(term, (totals.get(term) ?? 0) + count);
     }
   }
-  return [...totals.entries()]
+
+  const phraseText = items
+    .map(
+      (item) =>
+        `${item.paper.title}. ${item.paper.abstract ?? ""}. ${item.paper.text.slice(0, 6000)}`
+    )
+    .join("\n");
+  const phrases = topPhrases(phraseText, 8);
+  const titleTerms = topTerms(
+    items.map((item) => `${item.paper.title} ${item.paper.abstract ?? ""}`).join(" "),
+    8
+  );
+  const singleTerms = [...totals.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, 7)
+    .slice(0, 12)
     .map(([term]) => term);
+
+  return [...new Set([...phrases, ...titleTerms, ...singleTerms])]
+    .filter((term) => !/^(the|and|for|with|from|that|this|paper|study)$/i.test(term))
+    .slice(0, 7);
 }
 
 function summarizeCluster(papers: ResearchPaper[], keywords: string[]) {
