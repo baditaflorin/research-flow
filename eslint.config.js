@@ -5,7 +5,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["docs/assets/**", "docs/index.html", "docs/404.html", "coverage/**"] },
+  { ignores: ["docs/assets/**", "docs/index.html", "docs/404.html", "coverage/**", "tmp/**"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
