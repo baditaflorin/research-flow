@@ -36,7 +36,13 @@ test("pasted text can produce a portable project state", async ({ page }) => {
         "This pasted paper argues that usable research tools should accept text from the clipboard, keep source provenance, and export project state for later restoration.",
         "",
         "1 Introduction",
-        "Researchers often start from copied abstracts and notes rather than clean PDF files."
+        "Researchers often start from copied abstracts and notes rather than clean PDF files.",
+        "",
+        "2 Workflow",
+        "A paste-first workflow should preserve enough text for clustering, citation warnings, and gap analysis. It should not ask the user to save a temporary file before the first useful preview. The application should normalize whitespace, track provenance, and show confidence so the user can correct the draft rather than configure the system.",
+        "",
+        "3 Findings",
+        "Portable state is necessary because local browser projects otherwise stay trapped in one profile. Exported state should include settings, paper identifiers, analysis source hashes, and enough metadata to reproduce the result later. A stranger should be able to paste, analyze, export, import, and continue without asking for help."
       ].join("\n")
     );
   await page.getByRole("button", { name: /Import Text/i }).click();

@@ -3,3 +3,9 @@ Remote Work Reduces Productivity
 Abstract. This study examines remote work and productivity for software teams.
 
 The study finds that remote work decreases productivity and reduces team coordination in software teams. The effect is not significant for senior staff.
+
+Methods. The research compares teams that moved from colocated planning to remote-first delivery without changing meeting norms, documentation, or review practices. Junior engineers reported slower feedback loops, more uncertainty about priorities, and higher friction when design decisions were scattered across chat messages.
+
+Results. Productivity losses were concentrated in teams with unclear ownership, high dependency counts, and weak onboarding routines. The paper does not claim that remote work is always harmful; instead it argues that poorly supported remote transitions amplify coordination costs and make informal mentoring harder to access.
+
+Implications. Organizations should track collaboration latency, review quality, and new-hire ramp time when evaluating remote work. The study recommends targeted interventions such as structured mentoring, decision logs, and recurring architecture reviews before drawing broad conclusions.
