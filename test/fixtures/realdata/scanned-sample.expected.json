@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "fixture": "scanned-sample.pdf",
+  "source": "real-world scanned/OCR-like PDF sample",
+  "expected": {
+    "classification": "paper",
+    "status": "needs_ocr_or_better_text",
+    "lowText": true,
+    "maxUsableWordsBeforeWarning": 200,
+    "mustNotRunConfidentAnalysis": true,
+    "nextStepIncludes": ["OCR", "upload text", "better PDF"]
+  }
+}

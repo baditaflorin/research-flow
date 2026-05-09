@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "fixture": "bert.pdf",
+  "source": "https://arxiv.org/pdf/1810.04805",
+  "expected": {
+    "classification": "paper",
+    "status": "ready",
+    "titleIncludes": ["BERT", "Pre-training"],
+    "authorsInclude": ["Devlin", "Chang", "Lee", "Toutanova"],
+    "year": "2018",
+    "identifiersInclude": ["arXiv:1810.04805"],
+    "minWords": 8000,
+    "lowText": false,
+    "forbiddenClusterLabels": ["The And", "And The"],
+    "mustNotUseEmailFragmentsAsAuthors": true
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "fixture": "react.pdf",
+  "source": "https://arxiv.org/pdf/2210.03629",
+  "expected": {
+    "classification": "paper",
+    "status": "ready",
+    "titleIncludes": ["ReAct", "Reasoning and Acting"],
+    "authorsInclude": ["Yao"],
+    "year": "2022",
+    "identifiersInclude": ["arXiv:2210.03629"],
+    "minWords": 10000,
+    "lowText": false,
+    "mustNotAcceptReferenceDoiAsPaperDoi": true
+  }
+}

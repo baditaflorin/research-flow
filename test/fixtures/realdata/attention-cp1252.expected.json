@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "fixture": "attention-cp1252.txt",
+  "source": "arXiv metadata text for https://arxiv.org/abs/1706.03762 transcoded with BOM/CP1252-like bytes",
+  "expected": {
+    "classification": "paper_text",
+    "status": "ready",
+    "titleIncludes": ["Attention Is All You Need"],
+    "titleMustNotInclude": ["�", "\\ufeff"],
+    "year": "2017",
+    "minWords": 120,
+    "lowText": false,
+    "normalizationMustHandle": ["BOM", "CRLF", "NBSP", "smart quotes", "replacement characters"]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "fixture": "vit.pdf",
+  "source": "https://arxiv.org/pdf/2010.11929",
+  "expected": {
+    "classification": "paper",
+    "status": "ready",
+    "titleIncludes": ["An Image is Worth 16x16 Words", "Transformers for Image Recognition"],
+    "authorsInclude": ["Dosovitskiy"],
+    "year": "2020",
+    "identifiersInclude": ["arXiv:2010.11929"],
+    "minWords": 9000,
+    "lowText": false,
+    "mustNotAcceptReferenceDoiAsPaperDoi": true
+  }
+}

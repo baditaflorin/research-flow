@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "fixture": ["attention.pdf", "bert.pdf", "gpt3.pdf", "llama2.pdf", "vit.pdf", "react.pdf"],
+  "expected": {
+    "status": "ready",
+    "papersAnalyzed": 6,
+    "minMeaningfulClusters": 3,
+    "forbiddenClusterLabels": ["The And", "And The"],
+    "clusterLabelsShouldIncludeConcepts": [
+      "attention",
+      "language models",
+      "vision transformers",
+      "reasoning"
+    ],
+    "metadataCorrectForAtLeast": 4,
+    "mustExposeProgress": true,
+    "deterministic": true
+  }
+}

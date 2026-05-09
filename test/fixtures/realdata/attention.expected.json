@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "fixture": "attention.pdf",
+  "source": "https://arxiv.org/pdf/1706.03762",
+  "expected": {
+    "classification": "paper",
+    "status": "ready",
+    "titleIncludes": ["Attention Is All You Need"],
+    "authorsInclude": ["Vaswani"],
+    "year": "2017",
+    "identifiersInclude": ["arXiv:1706.03762"],
+    "minWords": 5000,
+    "lowText": false,
+    "forbiddenClusterLabels": ["The And", "And The"],
+    "mustNotAcceptReferenceDoiAsPaperDoi": true
+  }
+}

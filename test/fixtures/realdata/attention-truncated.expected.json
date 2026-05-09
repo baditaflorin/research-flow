@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "fixture": "attention-truncated.pdf",
+  "source": "first 60KB of https://arxiv.org/pdf/1706.03762",
+  "expected": {
+    "classification": "corrupt_or_partial_pdf",
+    "status": "failed_recoverable",
+    "mustNotRunConfidentAnalysis": true,
+    "errorIncludes": ["incomplete", "corrupt", "re-download"],
+    "nextStepIncludes": ["re-download", "full file"]
+  }
+}

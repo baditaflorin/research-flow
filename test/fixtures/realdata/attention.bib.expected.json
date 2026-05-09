@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "fixture": "attention.bib",
+  "source": "https://dblp.org/rec/journals/corr/VaswaniSPUJGKP17.bib",
+  "expected": {
+    "classification": "metadata_only",
+    "status": "needs_pdf_or_text",
+    "titleIncludes": ["Attention is All you Need"],
+    "authorsInclude": ["Vaswani"],
+    "year": "2017",
+    "mustNotShowGenericUnsupportedFile": true,
+    "nextStepIncludes": ["upload the PDF", "metadata-only"]
+  }
+}
