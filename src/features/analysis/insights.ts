@@ -10,9 +10,7 @@ export function detectContradictions(
   const contradictions: Contradiction[] = [];
 
   for (const cluster of clusters) {
-    const clusterPapers = cluster.paperIds
-      .map((id) => byId.get(id))
-      .filter(Boolean) as ResearchPaper[];
+    const clusterPapers = cluster.paperIds.map((id) => byId.get(id)).filter(isResearchPaper);
     const claims = clusterPapers.flatMap((paper) =>
       extractClaimSentences(paper.text, cluster.keywords).map((claim) => ({ paper, claim }))
     );
@@ -78,6 +76,10 @@ export function detectContradictions(
   }
 
   return contradictions;
+}
+
+function isResearchPaper(paper: ResearchPaper | undefined): paper is ResearchPaper {
+  return Boolean(paper);
 }
 
 export function detectGaps(papers: ResearchPaper[], clusters: Cluster[]): Gap[] {

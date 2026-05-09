@@ -226,7 +226,10 @@ function buildPaper(
       errorKind: "needs_ocr_or_better_text",
       error:
         "Text quality is too low for trustworthy synthesis. This looks scanned, OCR-poor, or incomplete.",
-      nextSteps: ["Run OCR and upload the text output, or upload a cleaner PDF."],
+      nextSteps: [
+        "Run OCR and upload text output.",
+        "Upload a better PDF if the source file has selectable text."
+      ],
       warnings: quality.reasons,
       textQuality: quality,
       inference
@@ -395,7 +398,9 @@ function inferAuthors(frontMatter: string, title: string, metadataAuthors?: stri
 
 function inferYear(frontMatter: string, fullText: string, arxivId?: string) {
   if (arxivId) {
-    const year = `20${arxivId.slice(0, 2)}`;
+    const shortYear = arxivId.match(/(\d{2})\d{2}\.\d{4,5}/)?.[1];
+    const year = shortYear ? `20${shortYear}` : undefined;
+    if (!year) return undefined;
     return inferred(year, 0.9, ["Derived year from the arXiv identifier."]);
   }
   const frontYear = frontMatter.match(yearPattern)?.[0];
@@ -452,7 +457,11 @@ function inferAbstract(text: string) {
 }
 
 function textQuality(text: string): TextQuality {
-  const tokens = text.toLowerCase().match(/[a-z][a-z-]{2,}/g) ?? [];
+  const tokens =
+    text
+      .toLowerCase()
+      .match(/[\p{L}\p{N}][\p{L}\p{N}'-]*/gu)
+      ?.filter((token) => token.length > 1) ?? [];
   const uniqueWordCount = new Set(tokens).size;
   const replacementCharacterCount = (text.match(/\uFFFD/g) ?? []).length;
   const replacementRatio = text.length ? replacementCharacterCount / text.length : 0;
@@ -508,7 +517,10 @@ function buildBibtexRecord(file: File, contentHash: string, text: string): Resea
     errorKind: "metadata_only",
     error:
       "This is citation metadata only. It can improve references, but Research Flow needs the paper PDF or text for synthesis.",
-    nextSteps: ["Upload the PDF or a text extract for this paper."],
+    nextSteps: [
+      "Upload the PDF or a text extract for this paper.",
+      "Metadata-only records are kept for citations but not synthesis."
+    ],
     warnings: ["Metadata-only records are not analyzed as evidence."],
     textQuality: {
       wordCount: 0,
@@ -559,7 +571,7 @@ function domainFailure(
     addedAt: stableAddedAt(file),
     status: "failed",
     errorKind: kind,
-    error: `${message.what} ${message.why}`,
+    error: `${message.what} ${message.why} Next: ${message.nextSteps[0]}`,
     nextSteps: message.nextSteps,
     warnings: [message.why],
     textQuality: {

@@ -1,4 +1,4 @@
-.PHONY: help install-hooks dev build data test test-integration smoke lint fmt pages-preview release clean hooks-pre-commit hooks-commit-msg hooks-pre-push hooks-post-merge hooks-post-checkout
+.PHONY: help install-hooks dev build data test test-realdata test-integration smoke lint fmt pages-preview release clean hooks-pre-commit hooks-commit-msg hooks-pre-push hooks-post-merge hooks-post-checkout
 
 help:
 	@printf "%s\n" \
@@ -7,6 +7,7 @@ help:
 		"make build             build the Pages-ready app into docs/" \
 		"make data              Mode A no-op; no static data pipeline" \
 		"make test              run unit tests with coverage" \
+		"make test-realdata     run Phase 2/3 real-data fixture regression" \
 		"make test-integration  run Playwright e2e tests against an existing server" \
 		"make smoke             build, serve docs/, and run Playwright happy path" \
 		"make lint              run eslint, prettier check, and TypeScript" \
@@ -31,6 +32,9 @@ data:
 
 test:
 	npm test
+
+test-realdata:
+	npm run test:realdata
 
 test-integration:
 	npx playwright test

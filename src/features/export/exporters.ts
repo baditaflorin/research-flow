@@ -34,6 +34,11 @@ ${sections}
 ${formatBibliography(papers, style)}
 \\end{verbatim}
 
+\\section*{Run Provenance}
+\\begin{verbatim}
+${provenanceText({ papers, analysis, style })}
+\\end{verbatim}
+
 \\end{document}
 `;
 }
@@ -52,6 +57,12 @@ ${formatBibliography(papers, style)
   .split("\n")
   .map((entry) => `- ${entry}`)
   .join("\n")}
+
+## Run Provenance
+
+\`\`\`text
+${provenanceText({ papers, analysis, style })}
+\`\`\`
 `;
 }
 
@@ -78,7 +89,11 @@ export async function buildDocxBlob(payload: ExportPayload) {
           new docx.Paragraph({ text: "References", heading: docx.HeadingLevel.HEADING_1 }),
           ...formatBibliography(payload.papers, payload.style)
             .split("\n")
-            .map((entry) => new docx.Paragraph({ text: entry, bullet: { level: 0 } }))
+            .map((entry) => new docx.Paragraph({ text: entry, bullet: { level: 0 } })),
+          new docx.Paragraph({ text: "Run Provenance", heading: docx.HeadingLevel.HEADING_1 }),
+          ...provenanceText(payload)
+            .split("\n")
+            .map((line) => new docx.Paragraph({ text: line }))
         ]
       }
     ]
@@ -118,6 +133,53 @@ function sectionToDocx(section: OutlineSection, docx: typeof import("docx")) {
         })
     )
   ];
+}
+
+export function bibliographyWithConfidence({ papers, analysis, style }: ExportPayload) {
+  const citationByPaper = new Map(
+    analysis.citations.map((citation) => [citation.paperId, citation])
+  );
+  return formatBibliography(papers, style)
+    .split("\n")
+    .map((entry) => {
+      const citation = [...citationByPaper.values()].find((item) => item.bibliography === entry);
+      if (!citation) return entry;
+      const warnings = citation.warnings.length ? ` warnings=${citation.warnings.join("; ")}` : "";
+      return `${entry} [confidence=${Math.round(citation.confidence * 100)}%${warnings}]`;
+    })
+    .join("\n");
+}
+
+export function bibtexWithConfidence({ analysis }: ExportPayload) {
+  return analysis.citations
+    .map((citation) => {
+      const warnings = citation.warnings.length
+        ? `\n% warnings: ${citation.warnings.join("; ")}`
+        : "";
+      return `% confidence: ${Math.round(citation.confidence * 100)}%${warnings}\n${citation.bibtex}`;
+    })
+    .join("\n\n");
+}
+
+function provenanceText({ papers, analysis, style }: ExportPayload) {
+  const paperLines = papers
+    .map((paper) => {
+      const confidence = paper.inference?.title.confidence ?? 0;
+      return `- ${paper.id}: ${paper.title} (${paper.status}, title confidence ${Math.round(confidence * 100)}%)`;
+    })
+    .join("\n");
+
+  return [
+    `app-version: ${analysis.provenance.appVersion}`,
+    `schema-version: ${analysis.provenance.schemaVersion}`,
+    `source-hash: ${analysis.provenance.sourceHash}`,
+    `generated-at: ${analysis.generatedAt}`,
+    `citation-style: ${style}`,
+    `engine: ${analysis.engine}`,
+    `parameters: ${JSON.stringify(analysis.provenance.parameters)}`,
+    `papers:`,
+    paperLines
+  ].join("\n");
 }
 
 function escapeLatex(value: string) {

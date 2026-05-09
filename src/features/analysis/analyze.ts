@@ -57,8 +57,7 @@ function analysisSourceHash(papers: ResearchPaper[], options: AnalyzeOptions) {
 }
 
 function appVersion() {
-  const globalVersion = (globalThis as { __APP_VERSION__?: string }).__APP_VERSION__;
-  return globalVersion ?? "0.1.0";
+  return typeof __APP_VERSION__ === "string" ? __APP_VERSION__ : "0.1.0";
 }
 
 async function vectorizeWithTransformers(papers: ResearchPaper[]): Promise<VectorizedPaper[]> {

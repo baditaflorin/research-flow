@@ -59,7 +59,7 @@ function clusterConfidence(keywords: string[], paperCount: number) {
 function chooseClusterCount(total: number) {
   if (total <= 1) return 1;
   if (total <= 4) return 2;
-  return Math.min(6, Math.max(2, Math.round(Math.sqrt(total))));
+  return Math.min(6, Math.max(3, Math.round(Math.sqrt(total)) + 1));
 }
 
 function kmeans(vectors: number[][], k: number) {
@@ -115,6 +115,8 @@ function clusterKeywords(items: VectorizedPaper[]) {
         `${item.paper.title}. ${item.paper.abstract ?? ""}. ${item.paper.text.slice(0, 6000)}`
     )
     .join("\n");
+  const titlePhraseText = items.map((item) => item.paper.title).join(". ");
+  const titlePhrases = topPhrases(titlePhraseText, 8);
   const phrases = topPhrases(phraseText, 8);
   const titleTerms = topTerms(
     items.map((item) => `${item.paper.title} ${item.paper.abstract ?? ""}`).join(" "),
@@ -125,9 +127,18 @@ function clusterKeywords(items: VectorizedPaper[]) {
     .slice(0, 12)
     .map(([term]) => term);
 
-  return [...new Set([...phrases, ...titleTerms, ...singleTerms])]
-    .filter((term) => !/^(the|and|for|with|from|that|this|paper|study)$/i.test(term))
+  return [...new Set([...titlePhrases, ...titleTerms, ...phrases, ...singleTerms])]
+    .filter(isMeaningfulKeyword)
     .slice(0, 7);
+}
+
+function isMeaningfulKeyword(term: string) {
+  if (/^(the|and|for|with|from|that|this|paper|study)$/i.test(term)) return false;
+  if (/\b(Google|Brain|Meta|University|Department|Research|OpenAI|Princeton)\b/i.test(term)) {
+    return false;
+  }
+  if (/[bcdfghjklmnpqrstvwxyz]{4,}/i.test(term.replace(/\s+/g, ""))) return false;
+  return true;
 }
 
 function summarizeCluster(papers: ResearchPaper[], keywords: string[]) {

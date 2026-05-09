@@ -18,7 +18,10 @@ const queryClient = new QueryClient({
   }
 });
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+const root = document.getElementById("root");
+if (!root) throw new Error("Research Flow could not find its root element.");
+
+ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

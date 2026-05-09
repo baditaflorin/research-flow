@@ -17,6 +17,7 @@
     "lint": "eslint . && prettier --check . && tsc --noEmit",
     "fmt": "prettier --write .",
     "test": "vitest run --coverage",
+    "test:realdata": "node scripts/run-realdata-fixtures.mjs",
     "test:watch": "vitest",
     "smoke": "bash scripts/smoke.sh"
   },
