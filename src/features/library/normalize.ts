@@ -12,6 +12,7 @@ export function normalizeResearchText(text: string) {
 
   return normalized
     .replace(/^\uFEFF+/, "")
+    .replace(/^ÿ+/, "")
     .replace(/\uFFFD+/g, "")
     .replace(/\u00a0/g, " ")
     .replace(/\u00ad/g, "")
@@ -28,6 +29,7 @@ export function normalizeResearchText(text: string) {
 
 export function normalizeTitleText(text: string) {
   let title = normalizeResearchText(text)
+    .replace(/^ÿ+/, "")
     .replace(/[∗†‡§¶]+/g, "")
     .replace(/\s+/g, " ")
     .trim();

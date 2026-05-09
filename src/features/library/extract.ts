@@ -625,8 +625,13 @@ function titleScore(title: string, frontMatter: string) {
   let score = 0;
   if (/[A-Z]/.test(title)) score += 12;
   if (title.includes(":")) score += 8;
-  if (/\b(transformer|bert|llama|language|attention|image|reasoning|models?)\b/i.test(title))
+  if (
+    /\b(transformer|transformers|bert|llama|language|attention|image|vision|recognition|reasoning|acting|models?|learners?)\b/i.test(
+      title
+    )
+  )
     score += 18;
+  score += Math.min(16, title.split(/\s+/).length);
   if (frontMatter.toLowerCase().includes(title.toLowerCase().slice(0, 20))) score += 12;
   if (/^(figure|table|appendix|references)\b/i.test(title)) score -= 50;
   if (/\b(arxiv|copyright|permission|published as)\b/i.test(title)) score -= 30;
@@ -648,7 +653,9 @@ function skipTitleLine(line: string) {
     /^abstract\b/i.test(line) ||
     arxivPattern.test(line) ||
     /^published as\b/i.test(line) ||
-    /provided proper attribution|permission to reproduce|copyright/i.test(line) ||
+    /provided proper attribution|permission to reproduce|reproduce the tables|scholarly works|copyright/i.test(
+      line
+    ) ||
     /^(equal contribution|corresponding authors|contributions for all)/i.test(line)
   );
 }
