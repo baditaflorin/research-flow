@@ -23,3 +23,16 @@ Status key: green = works end to end; yellow = partial or unclear; red = expecte
 3. Exports do not yet carry enough metadata to reproduce a run.
 4. A share link is expected for a URL-first product but absent.
 5. Browser print is discoverable only by accident.
+
+## After Phase 3
+
+| Output                | After             | Evidence                                                                    |
+| --------------------- | ----------------- | --------------------------------------------------------------------------- |
+| Markdown/LaTeX/Word   | green             | Exports include run provenance and citation confidence.                     |
+| Copy Markdown         | green             | UI copies the generated Markdown draft.                                     |
+| Copy citations/BibTeX | green             | UI copies bibliography plus BibTeX with confidence comments.                |
+| JSON/API-ready output | green             | `Export State` downloads versioned `.research-flow.json`.                   |
+| Import exported state | green             | Shared project schema validates import, IndexedDB, and hash state.          |
+| Share link            | green-with-limits | Small state links copy to clipboard; large state falls back to file export. |
+| Print/PDF             | green             | Explicit print command invokes browser print for the current analysis.      |
+| API/curl endpoint     | gray              | Still out of scope for Mode A; JSON export is the automation format.        |

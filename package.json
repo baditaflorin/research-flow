@@ -1,6 +1,6 @@
 {
   "name": "research-flow",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Private browser research workspace for clustering papers, finding gaps, drafting outlines, and exporting cited Word/LaTeX.",
   "type": "module",
   "private": false,

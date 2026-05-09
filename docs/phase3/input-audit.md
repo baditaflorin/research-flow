@@ -27,3 +27,18 @@ Status key: green = works end to end on user data; yellow = works partially or n
 3. Batch uploads append duplicates, making repeated attempts messy.
 4. URL input is absent even though many real papers are encountered first as URLs.
 5. BibTeX is supported in the engine but hidden from the input affordance.
+
+## After Phase 3
+
+| Pathway                              | After             | Evidence                                                                              |
+| ------------------------------------ | ----------------- | ------------------------------------------------------------------------------------- |
+| File picker: PDF/TXT/Markdown/BibTeX | green             | `npm run test:realdata` passes PDF, text, and BibTeX fixtures.                        |
+| Drag/drop                            | green             | Same handler as file picker.                                                          |
+| Multi-file batch                     | green             | Six-paper batch fixture passes with deterministic rerun.                              |
+| Paste text/HTML                      | green             | Smoke test imports pasted text and exports portable state.                            |
+| URL input                            | green-with-limits | CORS-readable URLs import; blocked URLs show paste/download guidance.                 |
+| Mobile file picker                   | green-with-limits | Native picker remains the entry point; OCR/camera images are documented out of scope. |
+| Sample/demo                          | green             | Sample loader uses the same text ingestion path.                                      |
+| Deep links/share links               | green-with-limits | Small state hash links work; large projects instruct state-file export.               |
+| Imported state file                  | green             | `.research-flow.json` is validated and imported.                                      |
+| Restored autosave                    | green             | IndexedDB v1 records migrate to v2 project state.                                     |

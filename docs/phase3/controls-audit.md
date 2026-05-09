@@ -19,3 +19,14 @@
 ## Stub/TODO Result
 
 No visible production control is a pure stub. The incomplete controls are real handlers with missing end-to-end completeness: persistence, provenance, copy/share/import, and cancellation.
+
+## After Phase 3
+
+Every visible production control now has an end-to-end handler:
+
+- Upload/drop/import routes PDF, TXT, Markdown, BibTeX, and state files.
+- Clipboard, paste, URL, sample, and import-state controls mutate project state or show actionable fallback guidance.
+- Build/cancel controls start and stop worker-backed operations.
+- Settings persist and affect analysis/export behavior.
+- Export/copy/share/print controls produce user-visible output.
+- Clear removes project state and URL hash state.

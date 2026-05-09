@@ -23,3 +23,13 @@
 3. Export claims are true as downloads but weak as reproducible artifacts.
 4. BibTeX is implemented but not claimed or discoverable.
 5. README still speaks as V1 even though Phase 2 changed the input semantics.
+
+## After Phase 3
+
+| Claim area             | After status | Evidence                                                                               |
+| ---------------------- | ------------ | -------------------------------------------------------------------------------------- |
+| Debug inspectability   | shipped      | `?debug=1` panel shows operation state, paper confidence, analysis hash, and activity. |
+| Cancellation           | shipped      | Cancel button aborts extraction signals and terminates analysis workers.               |
+| Export reproducibility | shipped      | Drafts and state files include provenance, source hash, settings, and confidence.      |
+| BibTeX                 | shipped      | UI accepts `.bib`; fixture passes as metadata-only.                                    |
+| README feature list    | aligned      | README now describes current tested behavior and limitations.                          |

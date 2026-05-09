@@ -21,3 +21,29 @@ test("happy path builds a local research map from text papers", async ({ page })
   await expect(page.getByText("Draft Outline And Citations")).toBeVisible();
   await expect(page.getByRole("button", { name: /Word/i })).toBeEnabled();
 });
+
+test("pasted text can produce a portable project state", async ({ page }) => {
+  await page.goto("/research-flow/");
+
+  await page
+    .getByPlaceholder(/Paste paper text/i)
+    .fill(
+      [
+        "Paste-First Local Research",
+        "Example Author",
+        "",
+        "Abstract",
+        "This pasted paper argues that usable research tools should accept text from the clipboard, keep source provenance, and export project state for later restoration.",
+        "",
+        "1 Introduction",
+        "Researchers often start from copied abstracts and notes rather than clean PDF files."
+      ].join("\n")
+    );
+  await page.getByRole("button", { name: /Import Text/i }).click();
+  await expect(page.getByText(/Research map built/i).last()).toBeVisible({ timeout: 15_000 });
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: /Export State/i }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("research-flow-project.research-flow.json");
+});
