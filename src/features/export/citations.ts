@@ -22,7 +22,7 @@ export function createCitationRecords(
 }
 
 export function citationKey(paper: ResearchPaper) {
-  const author = paper.authors[0]?.split(/\s+/).at(-1) ?? "source";
+  const author = parseAuthorName(paper.authors[0] ?? "source").last;
   const year = paper.year ?? "nd";
   const slug = paper.title
     .toLowerCase()
@@ -35,27 +35,54 @@ export function citationKey(paper: ResearchPaper) {
 }
 
 export function inlineCitation(paper: ResearchPaper, style: CitationStyle) {
-  const author = paper.authors[0]?.split(/\s+/).at(-1) ?? shortTitle(paper.title);
+  const lastNames = paper.authors.map((author) => parseAuthorName(author).last);
+  const fallbackHandle = lastNames[0] ?? shortTitle(paper.title) ?? "Unknown";
   const year = paper.year ?? "n.d.";
-  if (style === "mla") return `(${author})`;
-  if (style === "chicago") return `(${author} ${year})`;
-  return `(${author}, ${year})`;
-}
-
-export function bibliographyEntry(paper: ResearchPaper, style: CitationStyle) {
-  const authors = paper.authors.length ? paper.authors.join(", ") : "Unknown author";
-  const year = paper.year ?? "n.d.";
-  const doi = paper.doi ? ` https://doi.org/${paper.doi.replace(/^https?:\/\/doi.org\//, "")}` : "";
 
   if (style === "mla") {
-    return `${authors}. "${paper.title}." ${year}.${doi}`;
+    // MLA in-text: (Last) for 1, (Last and Last) for 2, (Last et al.) for 3+.
+    if (lastNames.length === 0) return `("${shortTitle(paper.title)}")`;
+    if (lastNames.length === 1) return `(${lastNames[0]})`;
+    if (lastNames.length === 2) return `(${lastNames[0]} and ${lastNames[1]})`;
+    return `(${lastNames[0]} et al.)`;
   }
 
   if (style === "chicago") {
-    return `${authors}. ${year}. "${paper.title}."${doi}`;
+    // Author-date Chicago: (Last and Last 2020); (Last et al. 2020) for 4+
+    if (lastNames.length === 0) return `(${fallbackHandle} ${year})`;
+    if (lastNames.length === 1) return `(${lastNames[0]} ${year})`;
+    if (lastNames.length === 2) return `(${lastNames[0]} and ${lastNames[1]} ${year})`;
+    if (lastNames.length === 3) {
+      return `(${lastNames[0]}, ${lastNames[1]}, and ${lastNames[2]} ${year})`;
+    }
+    return `(${lastNames[0]} et al. ${year})`;
   }
 
-  return `${authors}. (${year}). ${paper.title}.${doi}`;
+  // APA in-text: (Smith, 2020); (Smith & Jones, 2020); (Smith et al., 2020) for 3+
+  if (lastNames.length === 0) return `(${fallbackHandle}, ${year})`;
+  if (lastNames.length === 1) return `(${lastNames[0]}, ${year})`;
+  if (lastNames.length === 2) return `(${lastNames[0]} & ${lastNames[1]}, ${year})`;
+  return `(${lastNames[0]} et al., ${year})`;
+}
+
+export function bibliographyEntry(paper: ResearchPaper, style: CitationStyle) {
+  const year = paper.year ?? "n.d.";
+  const doi = paper.doi ? formatDoi(paper.doi) : "";
+  const doiSuffix = doi ? ` ${doi}` : "";
+
+  if (style === "mla") {
+    const authorBlock = formatMlaAuthors(paper.authors);
+    return `${authorBlock} "${paper.title}." ${year}.${doiSuffix}`;
+  }
+
+  if (style === "chicago") {
+    const authorBlock = formatChicagoAuthors(paper.authors);
+    return `${authorBlock} ${year}. "${paper.title}."${doiSuffix}`;
+  }
+
+  // APA: Last, F. M., Last, F. M., & Last, F. M. (Year). Title.
+  const authorBlock = formatApaAuthors(paper.authors);
+  return `${authorBlock} (${year}). ${paper.title}.${doiSuffix}`;
 }
 
 export function formatBibliography(papers: ResearchPaper[], style: CitationStyle) {
@@ -77,6 +104,104 @@ export function bibtexEntry(paper: ResearchPaper, key = citationKey(paper)) {
     .map(([name, value]) => `  ${name} = {${escapeBibtex(value ?? "")}}`)
     .join(",\n");
   return `@article{${key},\n${body}\n}`;
+}
+
+interface ParsedName {
+  first: string;
+  last: string;
+  initials: string;
+}
+
+/**
+ * Parse a "First Middle Last" or "Last, First" string into pieces. Style
+ * formatters use the initials variant ("F. M.") and the last-name surname
+ * to produce APA/Chicago/MLA-style author entries.
+ */
+export function parseAuthorName(value: string): ParsedName {
+  const trimmed = value.trim();
+  if (!trimmed) return { first: "", last: "Unknown", initials: "" };
+
+  if (trimmed.includes(",")) {
+    const [last = "", givenRaw = ""] = trimmed.split(",", 2).map((part) => part.trim());
+    return {
+      last: last || "Unknown",
+      first: givenRaw,
+      initials: toInitials(givenRaw)
+    };
+  }
+
+  const parts = trimmed.split(/\s+/);
+  const last = parts.length === 1 ? parts[0]! : (parts.at(-1) ?? "Unknown");
+  const first = parts.length === 1 ? "" : parts.slice(0, -1).join(" ");
+  return { first, last, initials: toInitials(first) };
+}
+
+function toInitials(name: string): string {
+  if (!name) return "";
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}.`)
+    .join(" ");
+}
+
+function formatApaAuthors(authors: string[]): string {
+  const parsed = authors.map(parseAuthorName);
+  if (parsed.length === 0) return "Unknown author.";
+  const formatted = parsed.map((author) =>
+    author.initials ? `${author.last}, ${author.initials}` : author.last
+  );
+  if (formatted.length === 1) return ensureTrailingPeriod(formatted[0]!);
+  if (formatted.length === 2) return ensureTrailingPeriod(`${formatted[0]}, & ${formatted[1]}`);
+  // APA 7: list up to 20 authors with comma, ampersand before last.
+  const head = formatted.slice(0, -1).join(", ");
+  return ensureTrailingPeriod(`${head}, & ${formatted.at(-1)}`);
+}
+
+function ensureTrailingPeriod(value: string): string {
+  return value.endsWith(".") ? value : `${value}.`;
+}
+
+function formatMlaAuthors(authors: string[]): string {
+  if (authors.length === 0) return "Unknown.";
+  if (authors.length >= 3) {
+    const first = parseAuthorName(authors[0]!);
+    return first.first ? `${first.last}, ${first.first}, et al.` : `${first.last}, et al.`;
+  }
+  const first = parseAuthorName(authors[0]!);
+  const firstFormatted = first.first ? `${first.last}, ${first.first}` : first.last;
+  if (authors.length === 1) return `${firstFormatted}.`;
+  const second = parseAuthorName(authors[1]!);
+  const secondFormatted = second.first ? `${second.first} ${second.last}` : second.last;
+  return `${firstFormatted}, and ${secondFormatted}.`;
+}
+
+function formatChicagoAuthors(authors: string[]): string {
+  if (authors.length === 0) return "Unknown.";
+  const head = parseAuthorName(authors[0]!);
+  const headFormatted = head.first ? `${head.last}, ${head.first}` : head.last;
+  if (authors.length === 1) return `${headFormatted}.`;
+  if (authors.length === 2) {
+    const second = parseAuthorName(authors[1]!);
+    const secondFormatted = second.first ? `${second.first} ${second.last}` : second.last;
+    return `${headFormatted}, and ${secondFormatted}.`;
+  }
+  if (authors.length === 3) {
+    const middle = parseAuthorName(authors[1]!);
+    const middleFormatted = middle.first ? `${middle.first} ${middle.last}` : middle.last;
+    const last = parseAuthorName(authors[2]!);
+    const lastFormatted = last.first ? `${last.first} ${last.last}` : last.last;
+    return `${headFormatted}, ${middleFormatted}, and ${lastFormatted}.`;
+  }
+  return `${headFormatted}, et al.`;
+}
+
+function formatDoi(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (trimmed.toLowerCase().startsWith("doi.org/")) return `https://${trimmed}`;
+  return `https://doi.org/${trimmed}`;
 }
 
 function shortTitle(title: string) {
