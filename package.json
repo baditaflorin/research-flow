@@ -22,7 +22,7 @@
     "smoke": "bash scripts/smoke.sh"
   },
   "dependencies": {
-    "@huggingface/transformers": "^4.2.0",
+    "@huggingface/transformers": "^4.3.0",
     "@tanstack/react-query": "^5.100.9",
     "docx": "^9.6.1",
     "idb": "^8.0.3",
